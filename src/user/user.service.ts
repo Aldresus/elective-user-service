@@ -39,18 +39,6 @@ export class UserService {
     });
   }
 
-  //   findAll() {
-  //     return this.prisma.users.findMany();
-  //   }
-
-  //   findOne(id: string) {
-  //     return this.prisma.users.findUnique({
-  //       where: {
-  //         id,
-  //       },
-  //     });
-  //   }
-
   findMany(fields: { id: string; last_name: string; first_name: string }) {
     console.log(fields);
 
@@ -85,26 +73,6 @@ export class UserService {
     });
   }
 
-  //   async updateRefer(id: string, id2: string) {
-  //     console.log(id, id2);
-  //     const previousRefers = this.prisma.users
-  //       .findUnique({
-  //         where: {
-  //           id: id,
-  //         },
-  //       })
-  //       .then((user) => user.id_users);
-  //     console.log(previousRefers);
-
-  //     return this.prisma.users.update({
-  //       where: {
-  //         id,
-  //       },
-  //       data: {
-  //         id_users: (await previousRefers).concat(id2),
-  //       },
-  //     });
-  //   }
   async updateRefer(id: string, id2: string) {
     console.log(id, id2);
 

@@ -2,11 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateNotificationDto {
   @ApiProperty()
-  id_users: string;
+  content: string;
+
+  @ApiProperty()
+  type: string;
 
   @ApiProperty()
   sent_date: Date;
 
   @ApiProperty()
-  Users: any;
+  usersId: string;
 }

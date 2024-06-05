@@ -33,7 +33,9 @@ model Users {
 
 model Users_Notifications {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    id_users  String   @db.ObjectId
-    sent_date DateTime @default(now())
-    Users     Users?   @relation(fields: [id_users], references: [id])
+    content   String
+    type      String
+    sent_date DateTime
+    Users     Users?   @relation(fields: [usersId], references: [id])
+    usersId   String?  @db.ObjectId
 }

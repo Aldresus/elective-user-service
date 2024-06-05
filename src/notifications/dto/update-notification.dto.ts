@@ -3,14 +3,14 @@ import { CreateNotificationDto } from './create-notification.dto';
 
 export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
   @ApiProperty({ required: false })
-  id: string;
+  content: string;
 
   @ApiProperty({ required: false })
-  id_users: string;
+  type: string;
 
   @ApiProperty({ required: false })
   sent_date: Date;
 
   @ApiProperty({ required: false })
-  Users: any;
+  usersId: string;
 }

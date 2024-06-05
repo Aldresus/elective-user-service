@@ -4,30 +4,30 @@ import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
-export class NotificationService {
+export class NotificationsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createNotificationDto: CreateNotificationDto) {
+  async create(createNotificationDto: CreateNotificationDto) {
     console.log(createNotificationDto);
-    return this.prisma.notifications.create({
+    return this.prisma.users_Notifications.create({
       data: createNotificationDto,
     });
   }
 
   findAll() {
-    return this.prisma.notifications.findMany();
+    return this.prisma.users_Notifications.findMany();
   }
 
-  findOne(id: number) {
-    return this.prisma.notifications.findUnique({
+  findOne(id: string) {
+    return this.prisma.users_Notifications.findUnique({
       where: {
         id,
       },
     });
   }
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return this.prisma.notifications.update({
+  update(id: string, updateNotificationDto: UpdateNotificationDto) {
+    return this.prisma.users_Notifications.update({
       where: {
         id,
       },
@@ -35,8 +35,8 @@ export class NotificationService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.notifications.delete({
+  remove(id: string) {
+    return this.prisma.users_Notifications.delete({
       where: {
         id,
       },
