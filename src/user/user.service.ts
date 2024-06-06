@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { ObjectId } from 'mongodb';
+import { CreateNotificationDto } from './dto/create-notification.dto';
 
 @Injectable()
 export class UserService {
@@ -35,6 +36,7 @@ export class UserService {
       data: {
         ...createUserDto,
         id_users: filteredIdUsers,
+        notifications: []
       },
     });
   }
@@ -113,6 +115,30 @@ export class UserService {
     return this.prisma.users.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  findUserNotifications(id: string) {
+    return this.prisma.users.findUnique({
+      select: {
+        notifications: true,
+      },
+      where: {
+        id,
+      }
+    });
+  }
+
+  createUserNotifications(id: string, createNotifications: CreateNotificationDto) {
+    return this.prisma.users.update({
+      where: {
+        id,
+      },
+      data: {
+        notifications: {
+          push: {...createNotifications, sent_date: new Date(), id: new ObjectId().toHexString()},
+        },
       },
     });
   }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { Users } from '@prisma/client';
+import type { Users, Notifications } from '@prisma/client';
 
 export class UserEntity implements Users {
   @ApiProperty()
@@ -40,6 +40,9 @@ export class UserEntity implements Users {
 
   @ApiProperty()
   id_users: Array<string>;
+
+  @ApiProperty()
+  notifications: Array<Notifications>;
 
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);

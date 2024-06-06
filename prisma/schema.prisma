@@ -28,14 +28,12 @@ model Users {
     role                String
     password            String
     id_users            String[]              @default([]) @db.ObjectId
-    Users_Notifications Users_Notifications[]
+    notifications       Notifications[]     
 }
 
-model Users_Notifications {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+type Notifications {
+    id        String  @db.ObjectId
     content   String
     type      String
     sent_date DateTime
-    Users     Users?   @relation(fields: [usersId], references: [id])
-    usersId   String?  @db.ObjectId
 }

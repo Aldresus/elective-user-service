@@ -13,6 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { ApiBody, ApiCreatedResponse, ApiQuery } from '@nestjs/swagger';
+import { CreateNotificationDto } from './dto/create-notification.dto';
 
 @Controller('user')
 export class UserController {
@@ -79,5 +80,20 @@ export class UserController {
   @ApiBody({ type: UpdateUserDto })
   removeRefer(@Param('id') id: string, @Param('id_refer') id_refer: string) {
     return this.userService.removeRefer(id, id_refer);
+  }
+
+
+  @Get("/:id/notifications")
+  @ApiCreatedResponse({ type: UserEntity, isArray: true })  
+  findUserNotifications(@Param('id') id: string) {
+    console.log(id);
+    return this.userService.findUserNotifications(id);
+  }
+
+  @Post("/:id/notifications")
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiBody({ type: CreateNotificationDto })
+  createUserNotifications(@Param('id') id: string, @Body() createNotificationDto: CreateNotificationDto) {
+    return this.userService.createUserNotifications(id, createNotificationDto);
   }
 }
