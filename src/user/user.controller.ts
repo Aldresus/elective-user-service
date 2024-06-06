@@ -37,6 +37,12 @@ export class UserController {
     });
   }
 
+  @Get(':id')
+  @ApiCreatedResponse({ type: UserEntity })
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(id);
+  }
+
   @Post()
   @ApiCreatedResponse({ type: UserEntity })
   @ApiBody({ type: CreateUserDto })

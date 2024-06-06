@@ -36,12 +36,25 @@ export class UserService {
       data: {
         ...createUserDto,
         id_users: filteredIdUsers,
-        notifications: []
+        notifications: [],
       },
     });
   }
 
-  findMany(fields: { id: string; last_name: string; first_name: string }) {
+  findOne(id: string) {
+    return this.prisma.users.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  findMany(fields: {
+    id?: string;
+    last_name?: string;
+    first_name?: string;
+    email?: string;
+  }) {
     console.log(fields);
 
     return this.prisma.users.findMany({
@@ -56,6 +69,9 @@ export class UserService {
           {
             first_name:
               fields.first_name === '' ? undefined : fields.first_name,
+          },
+          {
+            email: fields.email === '' ? undefined : fields.email,
           },
         ],
       },
@@ -126,18 +142,25 @@ export class UserService {
       },
       where: {
         id,
-      }
+      },
     });
   }
 
-  createUserNotifications(id: string, createNotifications: CreateNotificationDto) {
+  createUserNotifications(
+    id: string,
+    createNotifications: CreateNotificationDto,
+  ) {
     return this.prisma.users.update({
       where: {
         id,
       },
       data: {
         notifications: {
-          push: {...createNotifications, sent_date: new Date(), id: new ObjectId().toHexString()},
+          push: {
+            ...createNotifications,
+            sent_date: new Date(),
+            id: new ObjectId().toHexString(),
+          },
         },
       },
     });
