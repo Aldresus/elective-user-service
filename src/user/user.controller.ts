@@ -88,18 +88,20 @@ export class UserController {
     return this.userService.removeRefer(id, id_refer);
   }
 
-
-  @Get("/:id/notifications")
-  @ApiCreatedResponse({ type: UserEntity, isArray: true })  
+  @Get('/:id/notifications')
+  @ApiCreatedResponse({ type: UserEntity, isArray: true })
   findUserNotifications(@Param('id') id: string) {
     console.log(id);
     return this.userService.findUserNotifications(id);
   }
 
-  @Post("/:id/notifications")
+  @Post('/:id/notifications')
   @ApiCreatedResponse({ type: UserEntity })
   @ApiBody({ type: CreateNotificationDto })
-  createUserNotifications(@Param('id') id: string, @Body() createNotificationDto: CreateNotificationDto) {
+  createUserNotifications(
+    @Param('id') id: string,
+    @Body() createNotificationDto: CreateNotificationDto,
+  ) {
     return this.userService.createUserNotifications(id, createNotificationDto);
   }
 }

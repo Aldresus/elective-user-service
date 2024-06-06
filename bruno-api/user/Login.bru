@@ -5,7 +5,14 @@ meta {
 }
 
 post {
-  url: 
-  body: none
+  url: http://localhost:3000/auth/login
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "username": "louis.dumont@viacesi.fr",
+    "password": "passwd"
+  }  
 }
