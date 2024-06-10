@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Users microservice')
+    .setTitle('Users microservice JENKINS TEST')
     .setDescription('Users microservice')
     .setVersion('1.0')
     .build();
