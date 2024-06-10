@@ -1,0 +1,45 @@
+pipeline {
+    agent any 
+
+    environment {
+        MONGODB_URI = credentials('USER_SERVICE_MONGODB_URI')
+    }
+
+    stages {
+        stage('clear existing image and container') {
+            steps {
+                script {
+                    try {
+                        sh "docker kill user-service"
+                        sh "docker rm user-service"
+                        sh "docker rmi user-service"
+
+
+                    } catch (Exception e) {
+                        echo "No existing image or container to remove"
+                    }
+                }
+            }
+        }
+        stage('build image') {
+            steps {
+                script {
+                    // Start the application within the running container
+                    sh "touch .env && echo DATABASE_URL=${MONGODB_URI} >> .env"
+                    sh "docker build -t user-service ."
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                script {
+                    sh "docker run -d --name user-service -p 9013:3000 --restart unless-stopped user-service"
+                }
+            }
+        }
+    }
+}
+
+def dockerExec(command) {
+    sh "docker exec ${CONTAINER_NAME} ${command}"
+}
