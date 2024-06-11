@@ -9,43 +9,9 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto) {
-    console.log(createUserDto);
-    // Validate id_users to ensure they are ObjectIDs or empty
-    const validIdUsers =
-      createUserDto.id_users?.filter((id) => ObjectId.isValid(id)) || [];
-
-    // Check if each ID exists in the Users collection
-    const existingUsers = await this.prisma.users.findMany({
-      where: {
-        id: { in: validIdUsers },
-      },
-      select: { id: true },
-    });
-
-    // Extract existing IDs from the result
-    const existingIds = existingUsers.map((user) => user.id);
-
-    // Filter out non-existing IDs
-    const filteredIdUsers = validIdUsers.filter((id) =>
-      existingIds.includes(id),
-    );
-
-    // Create user with validated and existing id_users
+  create(createUserDto: CreateUserDto) {
     return this.prisma.users.create({
-      data: {
-        ...createUserDto,
-        id_users: filteredIdUsers,
-        notifications: [],
-      },
-    });
-  }
-
-  findOne(id: string) {
-    return this.prisma.users.findUnique({
-      where: {
-        id,
-      },
+      data: createUserDto,
     });
   }
 
@@ -78,20 +44,16 @@ export class UserService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    console.log(id, updateUserDto);
-
+  update(id: string, updateUserDto: UpdateUserDto) {
     return this.prisma.users.update({
       where: {
         id,
       },
-      data: {
-        ...updateUserDto,
-      },
+      data: updateUserDto,
     });
   }
 
-  async updateRefer(id: string, id2: string) {
+  updateRefer(id: string, id2: string) {
     console.log(id, id2);
 
     return this.prisma.users.update({
@@ -106,25 +68,36 @@ export class UserService {
     });
   }
 
-  async removeRefer(id: string, id2: string) {
+  removeRefer(id: string, id2: string) {
     console.log(id, id2);
 
-    const previousRefers = this.prisma.users
+    return this.prisma.users
       .findUnique({
         where: {
           id: id,
         },
       })
-      .then((user) => user.id_users.filter((id) => id !== id2));
-
-    return this.prisma.users.update({
-      where: {
-        id,
-      },
-      data: {
-        id_users: await previousRefers,
-      },
-    });
+      .then((user) => {
+        if (user) {
+          const previousRefers = user.id_users.filter(
+            (userId) => userId !== id2,
+          );
+          return this.prisma.users.update({
+            where: {
+              id,
+            },
+            data: {
+              id_users: previousRefers,
+            },
+          });
+        } else {
+          throw new Error('User not found');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 
   remove(id: string) {
