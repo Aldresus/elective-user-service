@@ -35,9 +35,9 @@ pipeline {
             steps {
                 script {
                     echo "building image with mongo ${MONGODB_URI}"
-                    sh "echo DATABASE_URL=\"${MONGODB_URI}\" >> .env"
-                    sh "echo JWT_SECRET=\"${JWT_SECRET}\" >> .env"
-                    sh "echo PASSWORD_SALT=\"${PASSWORD_SALT}\" >> .env"
+                    sh "echo DATABASE_URL=\"\"${MONGODB_URI}\"\" >> .env"
+                    sh "echo JWT_SECRET=\"\"${JWT_SECRET}\"\" >> .env"
+                    sh "echo PASSWORD_SALT=\"\"${PASSWORD_SALT}\"\" >> .env"
                     sh "docker build -t user-service ."
                 }
             }
