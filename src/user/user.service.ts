@@ -8,12 +8,15 @@ import { ReferUserDto } from './dto/refer-user.dto';
 import { UpdatePermissionsDto } from './dto/update-permissions.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtService } from '@nestjs/jwt';
+import * as crypto from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async login(
@@ -23,6 +26,10 @@ export class UserService {
     const user = (
       await this.prisma.users.findMany({ where: { email: username } })
     )[0];
+
+    const salt = this.configService.get<string>('PASSWORD_SALT');
+
+    pass = crypto.createHmac('sha256', salt).update(pass).digest('hex');
 
     if (user?.password !== pass) {
       throw new UnauthorizedException();
@@ -34,6 +41,13 @@ export class UserService {
   }
 
   async register(createUserDto: CreateUserDto) {
+    const salt = this.configService.get<string>('PASSWORD_SALT');
+
+    createUserDto.password = crypto
+      .createHmac('sha256', salt)
+      .update(createUserDto.password)
+      .digest('hex');
+
     return this.prisma.users.create({ data: createUserDto });
   }
 
