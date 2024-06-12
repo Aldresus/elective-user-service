@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -7,10 +7,35 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { ReferUserDto } from './dto/refer-user.dto';
 import { UpdatePermissionsDto } from './dto/update-permissions.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
+
+  async login(
+    username: string,
+    pass: string,
+  ): Promise<{ access_token: string }> {
+    const user = (
+      await this.prisma.users.findMany({ where: { email: username } })
+    )[0];
+
+    if (user?.password !== pass) {
+      throw new UnauthorizedException();
+    }
+    const payload = { sub: user.id, username: user.email };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  async register(createUserDto: any) {
+    return this.prisma.users.create(createUserDto);
+  }
 
   create(createUserDto: CreateUserDto) {
     return this.prisma.users.create({
