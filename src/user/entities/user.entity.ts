@@ -39,6 +39,9 @@ export class UserEntity implements Users {
   password: string;
 
   @ApiProperty()
+  id_restaurant: string;
+
+  @ApiProperty()
   id_users: Array<string>;
 
   @ApiProperty()

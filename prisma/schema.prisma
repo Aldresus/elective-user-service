@@ -17,7 +17,7 @@ model Users {
     id                  String                @id @default(auto()) @map("_id") @db.ObjectId
     last_name           String
     first_name          String
-    email               String              @unique
+    email               String                @unique
     postal_code         String
     address             String
     city                String
@@ -27,6 +27,7 @@ model Users {
     phone               String
     role                String
     password            String
+    id_restaurant       String                @db.ObjectId
     id_users            String[]              @default([]) @db.ObjectId
     notifications       Notifications[]     
 }
