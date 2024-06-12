@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         MONGODB_URI = credentials('USER_SERVICE_MONGODB_URI')
+        JWT_SECRET = credentials('JWT_SECRET')
         DISCORD_WEBHOOK_URL = credentials('DISCORD_WEBHOOK_URL')
     }
 
@@ -32,7 +33,8 @@ pipeline {
             steps {
                 script {
                     echo "building image with mongo ${MONGODB_URI}"
-                    sh "touch .env && echo DATABASE_URL=${MONGODB_URI} >> .env"
+                    sh "echo DATABASE_URL=${MONGODB_URI} >> .env"
+                    sh "echo JWT_SECRET=${JWT_SECRET} >> .env"
                     sh "docker build -t user-service ."
                 }
             }
