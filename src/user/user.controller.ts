@@ -45,7 +45,7 @@ export class UserController {
     return this.userService.register(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get users with optional filters' })
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
@@ -66,7 +66,7 @@ export class UserController {
     });
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Update user with ID' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -76,7 +76,7 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user with ID' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -85,7 +85,7 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Patch(':id/refer')
   @ApiOperation({ summary: 'Refer user' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -95,7 +95,7 @@ export class UserController {
     return this.userService.updateRefer(id, referUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Delete(':id/refer')
   @ApiOperation({ summary: 'Delete user refer' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -105,7 +105,7 @@ export class UserController {
     return this.userService.removeRefer(id, referUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Patch(':id/role')
   @ApiOperation({ summary: 'Update user role' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -115,7 +115,7 @@ export class UserController {
     return this.userService.updateRole(id, updateRoleDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Patch(':id/permissions')
   @ApiOperation({ summary: 'Update user permissions' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -128,7 +128,7 @@ export class UserController {
     return this.userService.updatePermissions(id, updatePermissionsDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Post('/:id/notifications')
   @ApiOperation({ summary: 'Create a notification' })
   @ApiCreatedResponse({ type: UserEntity })
@@ -141,7 +141,7 @@ export class UserController {
     return this.userService.createUserNotifications(id, createNotificationDto);
   }
 
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Get('/:id/notifications')
   @ApiOperation({ summary: 'Get notifications with user ID' })
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
