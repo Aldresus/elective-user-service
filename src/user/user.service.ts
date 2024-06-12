@@ -33,14 +33,8 @@ export class UserService {
     };
   }
 
-  async register(createUserDto: any) {
-    return this.prisma.users.create(createUserDto);
-  }
-
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.users.create({
-      data: createUserDto,
-    });
+  async register(createUserDto: CreateUserDto) {
+    return this.prisma.users.create({ data: createUserDto });
   }
 
   findMany(fields: {
