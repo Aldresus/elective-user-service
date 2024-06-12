@@ -46,16 +46,6 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Post()
-  @ApiOperation({ summary: 'Create a user' })
-  @ApiCreatedResponse({ type: UserEntity })
-  @ApiBody({ type: CreateUserDto })
-  @ApiBearerAuth('access-token')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get users with optional filters' })
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
