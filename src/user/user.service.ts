@@ -4,6 +4,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { ObjectId } from 'mongodb';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { ReferUserDto } from './dto/refer-user.dto';
+import { UpdatePermissionsDto } from './dto/update-permissions.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()
 export class UserService {
@@ -21,8 +24,6 @@ export class UserService {
     first_name?: string;
     email?: string;
   }) {
-    console.log(fields);
-
     return this.prisma.users.findMany({
       where: {
         AND: [
@@ -53,24 +54,28 @@ export class UserService {
     });
   }
 
-  updateRefer(id: string, id2: string) {
-    console.log(id, id2);
+  remove(id: string) {
+    return this.prisma.users.delete({
+      where: {
+        id,
+      },
+    });
+  }
 
+  updateRefer(id: string, referUserDto: ReferUserDto) {
     return this.prisma.users.update({
       where: {
         id,
       },
       data: {
         id_users: {
-          push: id2,
+          push: referUserDto.id_refer,
         },
       },
     });
   }
 
-  removeRefer(id: string, id2: string) {
-    console.log(id, id2);
-
+  removeRefer(id: string, referUserDto: ReferUserDto) {
     return this.prisma.users
       .findUnique({
         where: {
@@ -80,7 +85,7 @@ export class UserService {
       .then((user) => {
         if (user) {
           const previousRefers = user.id_users.filter(
-            (userId) => userId !== id2,
+            (userId) => userId !== referUserDto.id_refer,
           );
           return this.prisma.users.update({
             where: {
@@ -100,10 +105,28 @@ export class UserService {
       });
   }
 
-  remove(id: string) {
-    return this.prisma.users.delete({
-      where: {
-        id,
+  updateRole(id: string, updateRoleDto: UpdateRoleDto) {
+    return this.prisma.users.update({
+      where: { id },
+      data: {
+        role: {
+          update: {
+            name: updateRoleDto.name,
+          },
+        },
+      },
+    });
+  }
+
+  updatePermissions(id: string, updatePermissionsDto: UpdatePermissionsDto) {
+    return this.prisma.users.update({
+      where: { id },
+      data: {
+        role: {
+          update: {
+            permissions: updatePermissionsDto.permissions,
+          },
+        },
       },
     });
   }

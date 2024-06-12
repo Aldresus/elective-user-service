@@ -20,6 +20,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { ReferUserDto } from './dto/refer-user.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdatePermissionsDto } from './dto/update-permissions.dto';
 
 @Controller('api/user')
 @ApiTags('user')
@@ -68,20 +71,39 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  @Patch(':id/Refer/:id_refer')
-  @ApiOperation({ summary: 'Refer user1 ID to user2 ID' })
+  @Patch(':id/refer')
+  @ApiOperation({ summary: 'Refer user' })
   @ApiCreatedResponse({ type: UserEntity })
-  @ApiBody({ type: UpdateUserDto })
-  updateRefer(@Param('id') id: string, @Param('id_refer') id_refer: string) {
-    return this.userService.updateRefer(id, id_refer);
+  @ApiBody({ type: ReferUserDto })
+  updateRefer(@Param('id') id: string, @Body() referUserDto: ReferUserDto) {
+    return this.userService.updateRefer(id, referUserDto);
   }
 
-  @Delete(':id/Refer/:id_refer')
-  @ApiOperation({ summary: 'Delete user refer with ID' })
+  @Delete(':id/refer')
+  @ApiOperation({ summary: 'Delete user refer' })
   @ApiCreatedResponse({ type: UserEntity })
-  @ApiBody({ type: UpdateUserDto })
-  removeRefer(@Param('id') id: string, @Param('id_refer') id_refer: string) {
-    return this.userService.removeRefer(id, id_refer);
+  @ApiBody({ type: ReferUserDto })
+  removeRefer(@Param('id') id: string, @Body() referUserDto: ReferUserDto) {
+    return this.userService.removeRefer(id, referUserDto);
+  }
+
+  @Patch(':id/role')
+  @ApiOperation({ summary: 'Update user role' })
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiBody({ type: UpdateRoleDto })
+  updateRole(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.userService.updateRole(id, updateRoleDto);
+  }
+
+  @Patch(':id/permissions')
+  @ApiOperation({ summary: 'Update user permissions' })
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiBody({ type: UpdatePermissionsDto })
+  updatePermissions(
+    @Param('id') id: string,
+    @Body() updatePermissionsDto: UpdatePermissionsDto,
+  ) {
+    return this.userService.updatePermissions(id, updatePermissionsDto);
   }
 
   @Post('/:id/notifications')

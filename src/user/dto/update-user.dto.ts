@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateUserDto } from './create-user.dto';
+import { Role } from '@prisma/client';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ required: false })
@@ -27,7 +28,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   phone?: string;
 
   @ApiProperty({ required: false })
-  role?: string;
+  role?: Role;
 
   @ApiProperty({ required: false })
   password?: string;
