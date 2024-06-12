@@ -14,6 +14,7 @@ pipeline {
                 script {
                     sh "echo deleting existing image and container"
                     try {
+                        rm /usr/src/app/.env
                         sh "docker kill user-service"
                         sh "docker rm user-service"
                         sh "docker rmi user-service"
