@@ -5,8 +5,6 @@ import { PrismaService } from 'src/prisma.service';
 import { ObjectId } from 'mongodb';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { ReferUserDto } from './dto/refer-user.dto';
-import { UpdatePermissionsDto } from './dto/update-permissions.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
@@ -140,32 +138,6 @@ export class UserService {
         console.error(error);
         throw error;
       });
-  }
-
-  updateRole(id: string, updateRoleDto: UpdateRoleDto) {
-    return this.prisma.users.update({
-      where: { id },
-      data: {
-        role: {
-          update: {
-            name: updateRoleDto.name,
-          },
-        },
-      },
-    });
-  }
-
-  updatePermissions(id: string, updatePermissionsDto: UpdatePermissionsDto) {
-    return this.prisma.users.update({
-      where: { id },
-      data: {
-        role: {
-          update: {
-            permissions: updatePermissionsDto.permissions,
-          },
-        },
-      },
-    });
   }
 
   findUserNotifications(id: string) {
