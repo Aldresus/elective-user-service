@@ -21,5 +21,9 @@ RUN npx prisma generate
 # Creates a "dist" folder with the production build
 RUN npm run build
 
+# Copy the start script
+COPY --chown=node:node start.sh /usr/src/app/start.sh
+RUN chmod +x /usr/src/app/start.sh
+
 # Start the server using the production build
-CMD [ "node", "dist/src/main.js" ]
+CMD [ "/usr/src/app/start.sh" ]
