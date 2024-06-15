@@ -58,6 +58,7 @@ export class UserService {
     last_name?: string;
     first_name?: string;
     email?: string;
+    role?: string;
   }) {
     return this.prisma.users.findMany({
       where: {
@@ -74,6 +75,9 @@ export class UserService {
           },
           {
             email: fields.email === '' ? undefined : fields.email,
+          },
+          {
+            role: fields.role === '' ? undefined : fields.role,
           },
         ],
       },

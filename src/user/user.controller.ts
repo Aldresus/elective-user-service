@@ -50,17 +50,20 @@ export class UserController {
   @ApiQuery({ name: 'id', required: false, type: String })
   @ApiQuery({ name: 'first_name', required: false, type: String })
   @ApiQuery({ name: 'last_name', required: false, type: String })
+  @ApiQuery({ name: 'role', required: false, type: String })
   //@ApiBearerAuth('access-token')
   findAll(
     @Query('id') idUser: string,
     @Query('first_name') firstName: string,
     @Query('last_name') lastName: string,
+    @Query('role') role: string,
   ) {
-    console.log(idUser, firstName, lastName);
+    console.log(idUser, firstName, lastName, role);
     return this.userService.findMany({
       id: idUser,
       first_name: firstName,
       last_name: lastName,
+      role: role,
     });
   }
 
