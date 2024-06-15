@@ -3,13 +3,18 @@ pipeline {
 
     environment {
         MONGODB_URI = credentials('USER_SERVICE_MONGODB_URI')
+        JWT_SECRET = credentials('JWT_SECRET')
+        PASSWORD_SALT = credentials('PASSWORD_SALT')
+        DISCORD_WEBHOOK_URL = credentials('DISCORD_WEBHOOK_URL')
     }
 
     stages {
         stage('clear existing image and container') {
             steps {
                 script {
+                    sh "echo deleting existing image and container"
                     try {
+                        sh "rm .env"
                         sh "docker kill user-service"
                         sh "docker rm user-service"
                         sh "docker rmi user-service"
@@ -20,13 +25,25 @@ pipeline {
                     }
                 }
             }
+            post {
+                failure {
+                    discordSend description: "Failed to clear existing image and container.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                }
+            }
         }
         stage('build image') {
             steps {
                 script {
-                    // Start the application within the running container
-                    sh "touch .env && echo DATABASE_URL=${MONGODB_URI} >> .env"
+                    echo "building image with mongo ${MONGODB_URI}"
+                    sh "echo DATABASE_URL=${MONGODB_URI} >> .env"
+                    sh "echo JWT_SECRET=${JWT_SECRET} >> .env"
+                    sh "echo PASSWORD_SALT=${PASSWORD_SALT} >> .env"
                     sh "docker build -t user-service ."
+                }
+            }
+            post {
+                failure {
+                    discordSend description: "Failed to build image.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
                 }
             }
         }
@@ -34,6 +51,14 @@ pipeline {
             steps {
                 script {
                     sh "docker run -d --name user-service -p 9013:3000 --restart unless-stopped user-service"
+                }
+            }
+            post {
+                success {
+                    discordSend description: "Deployed image successfully.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                }
+                failure {
+                    discordSend description: "Failed to deploy image.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
                 }
             }
         }

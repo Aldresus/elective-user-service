@@ -1,52 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { ObjectId } from 'mongodb';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { ReferUserDto } from './dto/refer-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import * as crypto from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    console.log(createUserDto);
-    // Validate id_users to ensure they are ObjectIDs or empty
-    const validIdUsers =
-      createUserDto.id_users?.filter((id) => ObjectId.isValid(id)) || [];
+  async login(
+    username: string,
+    pass: string,
+  ): Promise<{ access_token: string }> {
+    const user = (
+      await this.prisma.users.findMany({ where: { email: username } })
+    )[0];
 
-    // Check if each ID exists in the Users collection
-    const existingUsers = await this.prisma.users.findMany({
-      where: {
-        id: { in: validIdUsers },
-      },
-      select: { id: true },
-    });
+    const salt = this.configService.get<string>('PASSWORD_SALT');
 
-    // Extract existing IDs from the result
-    const existingIds = existingUsers.map((user) => user.id);
+    pass = crypto.createHmac('sha256', salt).update(pass).digest('hex');
 
-    // Filter out non-existing IDs
-    const filteredIdUsers = validIdUsers.filter((id) =>
-      existingIds.includes(id),
-    );
-
-    // Create user with validated and existing id_users
-    return this.prisma.users.create({
-      data: {
-        ...createUserDto,
-        id_users: filteredIdUsers,
-        notifications: [],
-      },
-    });
+    if (user?.password !== pass) {
+      throw new UnauthorizedException();
+    }
+    const payload = {
+      sub: user.id,
+      username: user.email,
+      role: user.role,
+    };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 
-  findOne(id: string) {
-    return this.prisma.users.findUnique({
-      where: {
-        id,
-      },
-    });
+  async register(createUserDto: CreateUserDto) {
+    const salt = this.configService.get<string>('PASSWORD_SALT');
+
+    createUserDto.password = crypto
+      .createHmac('sha256', salt)
+      .update(createUserDto.password)
+      .digest('hex');
+
+    return this.prisma.users.create({ data: createUserDto });
   }
 
   findMany(fields: {
@@ -55,8 +59,6 @@ export class UserService {
     first_name?: string;
     email?: string;
   }) {
-    console.log(fields);
-
     return this.prisma.users.findMany({
       where: {
         AND: [
@@ -78,52 +80,12 @@ export class UserService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    console.log(id, updateUserDto);
-
+  update(id: string, updateUserDto: UpdateUserDto) {
     return this.prisma.users.update({
       where: {
         id,
       },
-      data: {
-        ...updateUserDto,
-      },
-    });
-  }
-
-  async updateRefer(id: string, id2: string) {
-    console.log(id, id2);
-
-    return this.prisma.users.update({
-      where: {
-        id,
-      },
-      data: {
-        id_users: {
-          push: id2,
-        },
-      },
-    });
-  }
-
-  async removeRefer(id: string, id2: string) {
-    console.log(id, id2);
-
-    const previousRefers = this.prisma.users
-      .findUnique({
-        where: {
-          id: id,
-        },
-      })
-      .then((user) => user.id_users.filter((id) => id !== id2));
-
-    return this.prisma.users.update({
-      where: {
-        id,
-      },
-      data: {
-        id_users: await previousRefers,
-      },
+      data: updateUserDto,
     });
   }
 
@@ -133,6 +95,49 @@ export class UserService {
         id,
       },
     });
+  }
+
+  updateRefer(id: string, referUserDto: ReferUserDto) {
+    return this.prisma.users.update({
+      where: {
+        id,
+      },
+      data: {
+        id_users: {
+          push: referUserDto.id_refer,
+        },
+      },
+    });
+  }
+
+  removeRefer(id: string, referUserDto: ReferUserDto) {
+    return this.prisma.users
+      .findUnique({
+        where: {
+          id: id,
+        },
+      })
+      .then((user) => {
+        if (user) {
+          const previousRefers = user.id_users.filter(
+            (userId) => userId !== referUserDto.id_refer,
+          );
+          return this.prisma.users.update({
+            where: {
+              id,
+            },
+            data: {
+              id_users: previousRefers,
+            },
+          });
+        } else {
+          throw new Error('User not found');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 
   findUserNotifications(id: string) {

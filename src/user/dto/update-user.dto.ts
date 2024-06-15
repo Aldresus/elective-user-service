@@ -32,6 +32,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ required: false })
   password?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ default: '000000000000000000000000', required: false })
+  id_restaurant?: string;
+
+  @ApiProperty({ default: [], required: false })
   id_users?: string[];
 }
