@@ -152,6 +152,21 @@ async function main() {
         '0ff837e23123bb15720c42bbcbd7e946061140b91a2add50a8870b82686344e8', // Mason*2024!
     },
   });
+  await prisma.users.create({
+    data: {
+      last_name: 'Jordan',
+      first_name: 'Nathan',
+      email: 'nathan.jordan@example.com',
+      postal_code: '12345',
+      address: '123 Maple Avenue',
+      city: 'Springfield',
+      birthday: '1990-01-15',
+      phone: '555-123-4567',
+      role: 'RESTAURATEUR',
+      password:
+        'b5151dcd079ab2910a7d358a6011b3c5e9e99139cf4289c184f68f455cc3883d', // John@2024!
+    },
+  });
 }
 
 main()
