@@ -87,10 +87,12 @@ export class UserService {
   update(id: string, updateUserDto: UpdateUserDto) {
     const salt = this.configService.get<string>('PASSWORD_SALT');
 
-    updateUserDto.password = crypto
-      .createHmac('sha256', salt)
-      .update(updateUserDto.password)
-      .digest('hex');
+    if (updateUserDto.password) {
+      updateUserDto.password = crypto
+        .createHmac('sha256', salt)
+        .update(updateUserDto.password)
+        .digest('hex');
+    }
 
     return this.prisma.users.update({
       where: {
