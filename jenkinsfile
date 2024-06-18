@@ -18,8 +18,6 @@ pipeline {
                         sh "docker kill user-service"
                         sh "docker rm user-service"
                         sh "docker rmi user-service"
-
-
                     } catch (Exception e) {
                         echo "No existing image or container to remove"
                     }
@@ -27,7 +25,10 @@ pipeline {
             }
             post {
                 failure {
-                    discordSend description: "Failed to clear existing image and container.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    script {
+                        def committerName = sh(script: 'git log -1 --pretty=format:"%cn"', returnStdout: true).trim()
+                        discordSend description: "Failed to clear existing image and container. Committer: ${committerName}", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    }
                 }
             }
         }
@@ -43,7 +44,10 @@ pipeline {
             }
             post {
                 failure {
-                    discordSend description: "Failed to build image.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    script {
+                        def committerName = sh(script: 'git log -1 --pretty=format:"%cn"', returnStdout: true).trim()
+                        discordSend description: "Failed to build image. Committer: ${committerName}", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    }
                 }
             }
         }
@@ -55,10 +59,16 @@ pipeline {
             }
             post {
                 success {
-                    discordSend description: "Deployed image successfully.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    script {
+                        def committerName = sh(script: 'git log -1 --pretty=format:"%cn"', returnStdout: true).trim()
+                        discordSend description: "Deployed image successfully. Committer: ${committerName}", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    }
                 }
                 failure {
-                    discordSend description: "Failed to deploy image.", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    script {
+                        def committerName = sh(script: 'git log -1 --pretty=format:"%cn"', returnStdout: true).trim()
+                        discordSend description: "Failed to deploy image. Committer: ${committerName}", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "${DISCORD_WEBHOOK_URL}"
+                    }
                 }
             }
         }
