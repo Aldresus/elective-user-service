@@ -8,6 +8,7 @@ import { ReferUserDto } from './dto/refer-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 @Injectable()
 export class UserService {
@@ -181,6 +182,33 @@ export class UserService {
             ...createNotifications,
             sent_date: new Date(),
             id: new ObjectId().toHexString(),
+          },
+        },
+      },
+    });
+  }
+
+  updateUserNotifications(
+    id_user: string,
+    id_notification: string,
+    updateNotificationDto: UpdateNotificationDto,
+  ) {
+    return this.prisma.users.updateMany({
+      where: {
+        id: id_user,
+        notifications: {
+          some: {
+            id: id_notification,
+          },
+        },
+      },
+      data: {
+        notifications: {
+          updateMany: {
+            where: {
+              id: id_notification,
+            },
+            data: updateNotificationDto,
           },
         },
       },

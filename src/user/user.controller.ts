@@ -25,6 +25,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { ReferUserDto } from './dto/refer-user.dto';
 import { AuthGuard } from './user.guard';
 import { UserLoginDto } from './dto/login-user.dto';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 @Controller('api/user')
 @ApiTags('user')
@@ -107,7 +108,7 @@ export class UserController {
   }
 
   //@UseGuards(AuthGuard)
-  @Post('/:id/notifications')
+  @Post(':id/notifications')
   @ApiOperation({ summary: 'Create a notification' })
   @ApiCreatedResponse({ type: UserEntity })
   @ApiBody({ type: CreateNotificationDto })
@@ -120,12 +121,31 @@ export class UserController {
   }
 
   //@UseGuards(AuthGuard)
-  @Get('/:id/notifications')
+  @Get(':id/notifications')
   @ApiOperation({ summary: 'Get notifications with user ID' })
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   //@ApiBearerAuth('access-token')
   findUserNotifications(@Param('id') id: string) {
     console.log(id);
     return this.userService.findUserNotifications(id);
+  }
+
+  @Patch(':id/notifications/:id_notification')
+  @ApiOperation({
+    summary: 'Update notification with user ID and notification ID',
+  })
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiBody({ type: UpdateNotificationDto })
+  //@ApiBearerAuth('access-token')
+  updateUserNotifications(
+    @Param('id') id: string,
+    @Param('id_notification') id_notification: string,
+    @Body() updateNotificationDto: UpdateNotificationDto,
+  ) {
+    return this.userService.updateUserNotifications(
+      id,
+      id_notification,
+      updateNotificationDto,
+    );
   }
 }

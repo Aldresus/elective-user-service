@@ -33,5 +33,6 @@ type Notifications {
     id        String  @db.ObjectId
     content   String
     type      String
+    read      Boolean @default(false)
     sent_date DateTime
 }
