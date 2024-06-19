@@ -22,7 +22,7 @@ model Users {
     created_at          DateTime              @default(now())
     edited_at           DateTime              @updatedAt
     phone               String
-    role                String
+    role                String                @default("CLIENT")
     password            String
     id_restaurant       String                @default("000000000000000000000000") @db.ObjectId
     id_users            String[]              @default([]) @db.ObjectId
