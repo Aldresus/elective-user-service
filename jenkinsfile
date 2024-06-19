@@ -15,8 +15,10 @@ pipeline {
                     sh "echo deleting existing image and container"
                     try {
                         sh "rm .env"
-                        sh "docker kill user-service"
-                        sh "docker rm user-service"
+                        sh "docker kill user-service1"
+                        sh "docker kill user-service2"
+                        sh "docker rm user-service1"
+                        sh "docker rm user-service2"
                         sh "docker rmi user-service"
                     } catch (Exception e) {
                         echo "No existing image or container to remove"
@@ -54,7 +56,8 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                    sh "docker run -d --name user-service -p 9013:3000 --restart unless-stopped user-service"
+                    sh "docker run -d --name user-service1 --network elective_network --restart unless-stopped user-service"
+                    sh "docker run -d --name user-service2 --network elective_network --restart unless-stopped user-service"
                 }
             }
             post {
